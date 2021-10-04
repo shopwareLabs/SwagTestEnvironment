@@ -21,6 +21,8 @@ class DatabaseTransport implements TransportInterface
 
     public function send(RawMessage $message, Envelope $envelope = null): ?SentMessage
     {
+        $envelope = null !== $envelope ? clone $envelope : Envelope::create($message);
+
         if ($message instanceof Email) {
             $this->mailRepository->create([
                 [
