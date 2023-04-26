@@ -12,5 +12,9 @@
         <service id="SwagTestEnvironment\Content\MailCatcher\MailCatcherDefinition">
             <tag name="shopware.entity.definition"/>
         </service>
+
+        <service id="SwagTestEnvironment\Content\MailCatcher\MailerCatcher" decorates="Shopware\Core\Content\Mail\Service\MailSender">
+            <argument type="service" id="sw_mail_catcher.repository"/>
+        </service>
     </services>
 </container>

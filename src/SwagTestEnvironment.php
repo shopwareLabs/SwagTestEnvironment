@@ -84,11 +84,4 @@ class SwagTestEnvironment extends Plugin
     {
         throw new \RuntimeException('It is not allowed to uninstall this Plugin');
     }
-
-    public function build(ContainerBuilder $container): void
-    {
-        parent::build($container);
-
-        $container->addCompilerPass(new MailTransportFactoryCompilerPass());
-    }
 }
