@@ -2,16 +2,14 @@
 
 namespace SwagTestEnvironment\Controller;
 
-use Shopware\Core\Framework\Routing\Exception\MissingRequestParameterException;
+use Shopware\Core\Framework\Routing\RoutingException;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"administration"}})
- */
+#[Route(defaults: ["_routeScope" => ["administration"]])]
 class FileController
 {
     private string $baseFolder;
@@ -21,9 +19,7 @@ class FileController
         $this->baseFolder = $baseFolder . '/custom/plugins/';
     }
 
-    /**
-     * @Route(path="/api/_action/code-editor/files", methods={"GET"})
-     */
+    #[Route(path: "/api/_action/code-editor/files", methods: ["GET"])]
     public function getFiles(): JsonResponse
     {
         $finder = new Finder();
@@ -43,10 +39,7 @@ class FileController
         return new JsonResponse($files);
     }
 
-    /**
-     * @Route(path="/api/_action/code-editor/file", methods={"GET"})
-     */
-    public function getFile(Request $request): Response
+    #[Route(path: "/api/_action/code-editor/file", methods: ["GET"])] public function getFile(Request $request): Response
     {
         $content = '';
 
@@ -59,9 +52,7 @@ class FileController
         return new JsonResponse(['content' => $content]);
     }
 
-    /**
-     * @Route(path="/api/_action/code-editor/file", methods={"PUT"})
-     */
+    #[Route(path: "/api/_action/code-editor/file", methods: ["PUT"])]
     public function saveFile(Request $request): Response
     {
         $newPath = $this->getPathOfRequest($request);
@@ -77,7 +68,7 @@ class FileController
 
     private function stripPath(string $path): string
     {
-        if (strpos($path, $this->baseFolder) === 0) {
+        if (str_starts_with($path, $this->baseFolder)) {
             return substr($path, strlen($this->baseFolder));
         }
 
@@ -89,13 +80,13 @@ class FileController
         $file = $request->query->get('file', '');
 
         if ($file === '') {
-            throw new MissingRequestParameterException('file');
+            throw RoutingException::missingRequestParameter('file');
         }
 
         $baseDir = realpath($this->baseFolder);
         $newPath = realpath($this->baseFolder . '/' . $file);
 
-        if (strpos($newPath, $baseDir) !== 0) {
+        if (!str_starts_with($newPath, $baseDir)) {
             throw new \InvalidArgumentException('Path travel detected');
         }
 
